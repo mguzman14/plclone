@@ -1,0 +1,14 @@
+
+- name: "Node-RED | Init"
+  hosts: all
+  become: true
+  gather_facts: yes
+  roles:
+  - { role: node-red, tags: ['node-red'] }
+
+- name: "PLC | Init"
+  hosts: all
+  become: true
+  gather_facts: yes
+  roles:
+  - { role: plc, tags: ['plc'] }
