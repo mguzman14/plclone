@@ -1,0 +1,43 @@
+- name: Comprobar si la imagen de OpenPLC ya existe localmente en Podman
+  ansible.builtin.shell: podman images | grep "localhost/openplc-local"
+  register: podman_image_check
+  failed_when: false
+  changed_when: false
+
+# - name: Asegurar que la imagen de OpenPLC está presente (Solo compila si NO existe)
+#   containers.podman.podman_image:
+#     name: openplc-local
+#     tag: latest
+#     path: "{{ role_path }}/files"
+#     state: present
+#     force: false
+#   # AHORA SÍ: Como la tarea de arriba está activa, registrará el éxito (rc == 0) y esta tarea se marcará como SKIPPING
+#   when: podman_image_check.rc != 0
+
+# - name: Asegurar que la imagen existe localmente en Podman
+#   ansible.builtin.shell: podman pull localhost/openplc-local:latest
+#   become: yes
+#   become_user: debian-dev
+#   ignore_errors: yes
+
+
+- name: Comprobar si los contenedores ya existen
+  ansible.builtin.shell: "podman ps -a --format '{{ '{{' }}.Names{{ '}}' }}'"
+  become: yes
+  become_user: debian-dev
+  register: contenedores_existentes
+  changed_when: false
+
+- name: Desplegar la flota de PLCs
+  ansible.builtin.shell: >
+    podman run -d --name "{{ item.nombre }}" --restart always 
+    -p "{{ 9001 + ansible_loop.index0 }}:8080" 
+    -p "{{ 5020 + ansible_loop.index0 }}:502" 
+    localhost/openplc-local:latest
+  become: yes
+  become_user: debian-dev
+  loop: "{{ flota_plc }}"
+  loop_control:
+    extended: true
+  # ESTA ES LA CLAVE: Solo se ejecuta si el nombre NO está en la lista de contenedores existentes
+  when: item.nombre not in contenedores_existentes.stdout_lines

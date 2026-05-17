@@ -10,6 +10,13 @@ all:
       ansible_become_password: "{{ lookup('env', 'HOST1_PWD') }}"
       ansible_connection: local
 
+
+      flota_plc:
+      - nombre: "plc-bombeo-entrada"
+      - nombre: "plc-dosificacion-cloro"
+      - nombre: "plc-filtracion"
+      - nombre: "plc-bombeo-salida"
+
   children:
     prod:
       hosts:

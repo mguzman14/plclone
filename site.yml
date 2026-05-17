@@ -15,7 +15,6 @@
 
 - name: "Monitor | Weavescope"
   hosts: all
-  become: true
-  gather_facts: yes
+  gather_facts: false
   roles:
   - { role: monitor, tags: ['monitor'] }

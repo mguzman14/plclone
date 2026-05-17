@@ -1,0 +1,14 @@
+- name: Comprobar qué contenedores de la flota están creados
+  ansible.builtin.shell: "podman ps -a --format '{{ '{{' }}.Names{{ '}}' }}'"
+  become: yes
+  become_user: debian-dev
+  register: contenedores_actuales
+  changed_when: false
+
+- name: Detener y eliminar la flota de PLCs
+  ansible.builtin.shell: "podman rm -f {{ item.nombre }}"
+  become: yes
+  become_user: debian-dev
+  loop: "{{ flota_plc }}"
+  # Solo intenta borrarlo si realmente existe en el sistema
+  when: item.nombre in contenedores_actuales.stdout_lines
