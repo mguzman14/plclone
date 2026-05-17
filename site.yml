@@ -12,3 +12,10 @@
   gather_facts: yes
   roles:
   - { role: plc, tags: ['plc'] }
+
+  - name: "Monitor | Weavescope"
+    hosts: all
+    become: true
+    gather_facts: yes
+    roles:
+    - { role: monitor, tags: ['monitor'] }

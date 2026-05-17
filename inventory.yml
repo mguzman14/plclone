@@ -8,6 +8,7 @@ all:
       ansible_host: "{{ lookup('env', 'HOST1_IP') }}"
       ansible_user: "{{ lookup('env', 'HOST1_USR') }}"
       ansible_become_password: "{{ lookup('env', 'HOST1_PWD') }}"
+      ansible_connection: local
 
   children:
     prod:
