@@ -12,12 +12,13 @@
 
 - name: Desplegar template de Docker Compose
   template:
-    src: dcompose-weavescope.yml.j2
-    dest: /opt/weavescope/docker-compose.yml
+    src: pcompose-weavescope.yml.j2
+    dest: /opt/weavescope/podman-compose.yml
     mode: '0644'
 
-- name: Levantar el contenedor de Weave Scope
-  community.docker.docker_compose_v2:
-    project_src: /opt/weavescope
-    state: present
-    pull: always  # Esto asegura que baje la imagen correcta si hay dudas
+- name: Levantar el contenedor de Weave Scope con podman-compose (CLI)
+  command:
+    cmd: podman-compose up -d
+    chdir: /opt/weavescope
+  register: podman_compose_result
+  changed_when: "'Creating' in podman_compose_result.stdout or 'Configuring' in podman_compose_result.stdout"

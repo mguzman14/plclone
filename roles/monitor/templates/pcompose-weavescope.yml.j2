@@ -4,21 +4,21 @@ services:
   weavescope:
     image: weaveworks/scope:{{ scope_version | default('latest') }}
     container_name: weavescope
-    pid: "host" 
+    network_mode: host
+    pid: host
     privileged: true
     restart: always
-    ports:
-      - "4040:4040"
-    networks:
-      - network_all
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/run/podman/podman.sock:/var/run/docker.sock"
     command:
       - "--probe.docker=true"
       - "--weave=false"
       # Importante: Weave Scope suele escuchar en el 4040 por defecto
     labels:
       - "traefik.enable=true"
+    command:
+      - "--probe.docker=true"
+      - "--app.bind=:8081"
       
 networks:
   network_all:
