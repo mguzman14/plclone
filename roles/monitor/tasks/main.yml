@@ -1,9 +1,12 @@
 ---
 - name: Crear directorio para el compose de Scope
   file:
-    path: /opt/weavescope
+    path: /home/debian-dev/services/weavescope
     state: directory
     mode: '0755'
+    owner: debian-dev    # 💡 CORREGIDO: Asegura que el dueño sea tu usuario
+    group: debian-dev
+  become: yes
 
 - name: Asegurar que no existan contenedores previos con el mismo nombre
   docker_container:
@@ -13,12 +16,12 @@
 - name: Desplegar template de Docker Compose
   template:
     src: pcompose-weavescope.yml.j2
-    dest: /opt/weavescope/podman-compose.yml
+    dest: /home/debian-dev/services/weavescope/podman-compose.yml
     mode: '0644'
 
 - name: Levantar el contenedor de Weave Scope con podman-compose (CLI)
   command:
     cmd: podman-compose up -d
-    chdir: /opt/weavescope
+    chdir: /home/debian-dev/services/weavescope
   register: podman_compose_result
   changed_when: "'Creating' in podman_compose_result.stdout or 'Configuring' in podman_compose_result.stdout"

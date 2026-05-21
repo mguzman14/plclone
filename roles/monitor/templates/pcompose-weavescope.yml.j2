@@ -9,17 +9,13 @@ services:
     privileged: true
     restart: always
     volumes:
-      - "/run/podman/podman.sock:/var/run/docker.sock"
-    command:
+      - "/run/user/1000/podman/podman.sock:/var/run/docker.sock:Z"
+    command: 
       - "--probe.docker=true"
+      - "--probe.kubernetes=false"
       - "--weave=false"
-      # Importante: Weave Scope suele escuchar en el 4040 por defecto
-    labels:
-      - "traefik.enable=true"
-    command:
-      - "--probe.docker=true"
       - "--app.bind=:8081"
-      
+
 networks:
   network_all:
     external: true
