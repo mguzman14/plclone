@@ -1,0 +1,40 @@
+- name: 0 - Crear el directorio para Node-RED
+  ansible.builtin.file:
+    path: /home/debian-dev/services/nodered/data
+    state: directory
+    mode: '0755'
+    owner: debian-dev
+    group: debian-dev
+  become: yes
+
+# - name: 1 - Comprobar si la imagen de Node-RED ya existe
+#   ansible.builtin.shell: "podman images -q localhost/nodered-local:latest"
+#   become: yes
+#   become_user: debian-dev
+#   register: imagen_nodered
+#   changed_when: false
+#   failed_when: false
+
+# - name: 2 - Construir la imagen si NO existe previamente
+#   ansible.builtin.shell:
+#     cmd: podman build -t localhost/nodered-local:latest .
+#     chdir: /home/debian-dev/services/nodered
+#   become: yes
+#   become_user: debian-dev
+#   # 💡 Solo se ejecuta si la salida del comando anterior está vacía (no encontró la imagen)
+#   when: imagen_nodered.stdout == ""
+
+- name: 1, 2 y 3 - Descargar imagen y desplegar el nuevo contenedor 'nodered_sim_etap'
+  containers.podman.podman_container:
+    name: nodered
+    image: docker.io/nodered/node-red:latest-22
+    state: started
+    # 💡 RECREATE: Si el contenedor existe pero está parado, lo borra y lo recrea
+    recreate: true
+    restart_policy: always
+    ports:
+      - "10190:1880"
+    volumes:
+      # Mapeamos los datos para no perder tus flujos si se reinicia el contenedor
+      - /home/debian-dev/services/nodered/data:/data:Z
+  become_user: debian-dev
