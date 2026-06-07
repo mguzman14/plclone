@@ -8,169 +8,6 @@
         "env": []
     },
     {
-        "id": "b61406ddacefabb7",
-        "type": "modbus-client",
-        "name": "plc-bombeo-entrada",
-        "clienttype": "tcp",
-        "bufferCommands": true,
-        "stateLogEnabled": true,
-        "queueLogEnabled": false,
-        "failureLogEnabled": true,
-        "tcpHost": "172.17.0.1",
-        "tcpPort": "5020",
-        "tcpType": "DEFAULT",
-        "serialPort": "/dev/ttyUSB",
-        "serialType": "RTU-BUFFERD",
-        "serialBaudrate": 9600,
-        "serialDatabits": 8,
-        "serialStopbits": 1,
-        "serialParity": "none",
-        "serialConnectionDelay": 100,
-        "serialAsciiResponseStartDelimiter": "0x3A",
-        "unit_id": 1,
-        "commandDelay": 1,
-        "clientTimeout": 1000,
-        "reconnectOnTimeout": true,
-        "reconnectTimeout": 2000,
-        "parallelUnitIdsAllowed": true,
-        "showErrors": true,
-        "showWarnings": true,
-        "showLogs": true
-    },
-    {
-        "id": "5257d28f7e183b63",
-        "type": "modbus-client",
-        "name": "plc-entrada-deposito",
-        "clienttype": "tcp",
-        "bufferCommands": true,
-        "stateLogEnabled": false,
-        "queueLogEnabled": false,
-        "failureLogEnabled": true,
-        "tcpHost": "192.168.1.40",
-        "tcpPort": "5021",
-        "tcpType": "DEFAULT",
-        "serialPort": "/dev/ttyUSB",
-        "serialType": "RTU-BUFFERD",
-        "serialBaudrate": 9600,
-        "serialDatabits": 8,
-        "serialStopbits": 1,
-        "serialParity": "none",
-        "serialConnectionDelay": 100,
-        "serialAsciiResponseStartDelimiter": "0x3A",
-        "unit_id": 1,
-        "commandDelay": 1,
-        "clientTimeout": 1000,
-        "reconnectOnTimeout": true,
-        "reconnectTimeout": 2000,
-        "parallelUnitIdsAllowed": true,
-        "showErrors": false,
-        "showWarnings": true,
-        "showLogs": true
-    },
-    {
-        "id": "b88ab16981cca0cf",
-        "type": "ui-base",
-        "name": "SCADA",
-        "path": "/dashboard",
-        "appIcon": "",
-        "includeClientData": true,
-        "acceptsClientConfig": [
-            "ui-notification",
-            "ui-control"
-        ],
-        "showPathInSidebar": false,
-        "headerContent": "page",
-        "navigationStyle": "default",
-        "titleBarStyle": "default",
-        "showReconnectNotification": true,
-        "notificationDisplayTime": 1,
-        "showDisconnectNotification": true,
-        "allowInstall": false
-    },
-    {
-        "id": "191625c00bb225b8",
-        "type": "ui-theme",
-        "name": "Default Theme",
-        "colors": {
-            "surface": "#ffffff",
-            "primary": "#0094CE",
-            "bgPage": "#eeeeee",
-            "groupBg": "#ffffff",
-            "groupOutline": "#cccccc"
-        },
-        "sizes": {
-            "density": "default",
-            "pagePadding": "12px",
-            "groupGap": "12px",
-            "groupBorderRadius": "4px",
-            "widgetGap": "12px"
-        }
-    },
-    {
-        "id": "b7f276b06bae283f",
-        "type": "ui-page",
-        "name": "Entrada ETAP",
-        "ui": "b88ab16981cca0cf",
-        "path": "/entrada",
-        "icon": "home",
-        "layout": "grid",
-        "theme": "191625c00bb225b8",
-        "breakpoints": [
-            {
-                "name": "Default",
-                "px": "0",
-                "cols": "3"
-            },
-            {
-                "name": "Tablet",
-                "px": "576",
-                "cols": "6"
-            },
-            {
-                "name": "Small Desktop",
-                "px": "768",
-                "cols": "9"
-            },
-            {
-                "name": "Desktop",
-                "px": "1024",
-                "cols": "12"
-            }
-        ],
-        "order": 1,
-        "className": "",
-        "visible": "true",
-        "disabled": "false"
-    },
-    {
-        "id": "8de9016d687ed1c5",
-        "type": "ui-group",
-        "name": "Històric",
-        "page": "b7f276b06bae283f",
-        "width": 6,
-        "height": 1,
-        "order": 1,
-        "showTitle": true,
-        "className": "",
-        "visible": "true",
-        "disabled": "false",
-        "groupType": "default"
-    },
-    {
-        "id": "512313cc9620a88c",
-        "type": "ui-group",
-        "name": "Estat",
-        "page": "b7f276b06bae283f",
-        "width": 6,
-        "height": 1,
-        "order": 2,
-        "showTitle": true,
-        "className": "",
-        "visible": "true",
-        "disabled": "false",
-        "groupType": "default"
-    },
-    {
         "id": "773b90ec8d9f4f94",
         "type": "inject",
         "z": "1561679d6f0e7efe",
@@ -191,11 +28,13 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 260,
-        "y": 140,
+        "x": 160,
+        "y": 380,
         "wires": [
             [
-                "275e763813031c95"
+                "275e763813031c95",
+                "aa39a450a4a0f982",
+                "f40ad38cbf3374a8"
             ]
         ]
     },
@@ -211,7 +50,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 480,
+        "x": 460,
         "y": 140,
         "wires": [
             [
@@ -232,8 +71,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1740,
-        "y": 440,
+        "x": 720,
+        "y": 560,
         "wires": []
     },
     {
@@ -249,40 +88,11 @@
         "keepMsgProperties": true,
         "delayOnStart": false,
         "startDelayTime": "",
-        "x": 810,
-        "y": 140,
+        "x": 1030,
+        "y": 100,
         "wires": [
             [],
             []
-        ]
-    },
-    {
-        "id": "d2c3360d94883c7c",
-        "type": "inject",
-        "z": "1561679d6f0e7efe",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "2",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 260,
-        "y": 420,
-        "wires": [
-            [
-                "f40ad38cbf3374a8"
-            ]
         ]
     },
     {
@@ -298,7 +108,7 @@
         "finalize": "",
         "libs": [],
         "x": 460,
-        "y": 420,
+        "y": 680,
         "wires": [
             [
                 "c8cf80454b3127cd",
@@ -319,7 +129,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 580,
+        "x": 520,
         "y": 260,
         "wires": []
     },
@@ -347,8 +157,8 @@
         "ioFile": "",
         "useIOForPayload": false,
         "emptyMsgOnFail": false,
-        "x": 1050,
-        "y": 140,
+        "x": 1270,
+        "y": 100,
         "wires": [
             [],
             []
@@ -371,8 +181,8 @@
         "keepMsgProperties": true,
         "delayOnStart": false,
         "startDelayTime": "",
-        "x": 710,
-        "y": 440,
+        "x": 950,
+        "y": 680,
         "wires": [
             [],
             []
@@ -402,8 +212,8 @@
         "ioFile": "",
         "useIOForPayload": false,
         "emptyMsgOnFail": false,
-        "x": 970,
-        "y": 440,
+        "x": 1250,
+        "y": 800,
         "wires": [
             [],
             []
@@ -457,8 +267,8 @@
         "styleRounded": true,
         "styleGlow": false,
         "className": "",
-        "x": 860,
-        "y": 240,
+        "x": 740,
+        "y": 200,
         "wires": [
             []
         ]
@@ -511,8 +321,8 @@
         "styleRounded": true,
         "styleGlow": false,
         "className": "",
-        "x": 900,
-        "y": 620,
+        "x": 740,
+        "y": 740,
         "wires": [
             []
         ]
@@ -573,8 +383,8 @@
         "height": 8,
         "className": "",
         "interpolation": "linear",
-        "x": 900,
-        "y": 680,
+        "x": 740,
+        "y": 800,
         "wires": [
             []
         ]
@@ -635,39 +445,10 @@
         "height": 8,
         "className": "",
         "interpolation": "linear",
-        "x": 860,
-        "y": 300,
+        "x": 740,
+        "y": 260,
         "wires": [
             []
-        ]
-    },
-    {
-        "id": "3521241a9214f374",
-        "type": "inject",
-        "z": "1561679d6f0e7efe",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "2",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 1300,
-        "y": 340,
-        "wires": [
-            [
-                "aa39a450a4a0f982"
-            ]
         ]
     },
     {
@@ -682,8 +463,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1540,
-        "y": 340,
+        "x": 480,
+        "y": 400,
         "wires": [
             [
                 "3c51e549c05fcf17",
@@ -745,14 +526,177 @@
         "styleRounded": true,
         "styleGlow": false,
         "className": "",
-        "x": 1800,
-        "y": 300,
+        "x": 760,
+        "y": 440,
         "wires": [
             []
         ]
     },
     {
-        "id": "f74ad6ed9a0a0516",
+        "id": "b61406ddacefabb7",
+        "type": "modbus-client",
+        "name": "plc-bombeo-entrada",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": true,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "172.17.0.1",
+        "tcpPort": "5020",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": 9600,
+        "serialDatabits": 8,
+        "serialStopbits": 1,
+        "serialParity": "none",
+        "serialConnectionDelay": 100,
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": 1,
+        "commandDelay": 1,
+        "clientTimeout": 1000,
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": 2000,
+        "parallelUnitIdsAllowed": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "5257d28f7e183b63",
+        "type": "modbus-client",
+        "name": "plc-entrada-deposito",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "192.168.1.40",
+        "tcpPort": "5021",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": 9600,
+        "serialDatabits": 8,
+        "serialStopbits": 1,
+        "serialParity": "none",
+        "serialConnectionDelay": 100,
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": 1,
+        "commandDelay": 1,
+        "clientTimeout": 1000,
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": 2000,
+        "parallelUnitIdsAllowed": true,
+        "showErrors": false,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "512313cc9620a88c",
+        "type": "ui-group",
+        "name": "Estat",
+        "page": "b7f276b06bae283f",
+        "width": 6,
+        "height": 1,
+        "order": 2,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "8de9016d687ed1c5",
+        "type": "ui-group",
+        "name": "Històric",
+        "page": "b7f276b06bae283f",
+        "width": 6,
+        "height": 1,
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "b7f276b06bae283f",
+        "type": "ui-page",
+        "name": "Entrada ETAP",
+        "ui": "b88ab16981cca0cf",
+        "path": "/entrada",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "191625c00bb225b8",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "b88ab16981cca0cf",
+        "type": "ui-base",
+        "name": "SCADA",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "191625c00bb225b8",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "046feaca4e9b8b74",
         "type": "global-config",
         "env": [],
         "modules": {
