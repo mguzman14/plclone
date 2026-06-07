@@ -24,7 +24,7 @@
 #   # 💡 Solo se ejecuta si la salida del comando anterior está vacía (no encontró la imagen)
 #   when: imagen_nodered.stdout == ""
 
-- name: 1, 2 y 3 - Descargar imagen y desplegar el nuevo contenedor 'nodered_sim_etap'
+- name: 1, 2 y 3 - Descargar imagen y desplegar el nuevo contenedor 'nodered'
   containers.podman.podman_container:
     name: nodered
     image: docker.io/nodered/node-red:latest-22
