@@ -1,27 +1,28 @@
----
-- name: Crear directorio para el compose de Scope
-  file:
-    path: /home/debian-dev/services/weavescope
-    state: directory
-    mode: '0755'
-    owner: debian-dev    # 💡 CORREGIDO: Asegura que el dueño sea tu usuario
-    group: debian-dev
+- name: 1. Asegurar que el socket de Podman del usuario está activo y habilitado
+  ansible.builtin.systemd:
+    name: podman.socket
+    scope: user
+    enabled: yes
+    state: started
   become: yes
+  become_user: debian-dev
 
-- name: Asegurar que no existan contenedores previos con el mismo nombre
-  docker_container:
+- name: 2. Desplegar el contenedor de Weave Scope mediante Podman
+  containers.podman.podman_container:
     name: weavescope
-    state: absent
-
-- name: Desplegar template de Docker Compose
-  template:
-    src: pcompose-weavescope.yml.j2
-    dest: /home/debian-dev/services/weavescope/podman-compose.yml
-    mode: '0644'
-
-- name: Levantar el contenedor de Weave Scope con podman-compose (CLI)
-  command:
-    cmd: podman-compose up -d
-    chdir: /home/debian-dev/services/weavescope
-  register: podman_compose_result
-  changed_when: "'Creating' in podman_compose_result.stdout or 'Configuring' in podman_compose_result.stdout"
+    image: "weaveworks/scope:latest"
+    state: started
+    restart_policy: always
+    # Eliminamos network_mode: host y pid: host para evitar bloqueos de privilegios
+    privileged: yes
+    # MAPEO EXPLÍCITO: Vinculamos el puerto 8081 de tu PC al 4040 interno de Scope
+    ports:
+      - "8081:4040"
+    volumes:
+      - "/run/user/1000/podman/podman.sock:/var/run/docker.sock:Z"
+    command:
+      - "--probe.docker=true"
+      - "--probe.kubernetes=false"
+      - "--weave=false"
+  become: yes
+  become_user: debian-dev
