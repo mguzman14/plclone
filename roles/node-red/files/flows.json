@@ -1,0 +1,317 @@
+[
+    {
+        "id": "1561679d6f0e7efe",
+        "type": "tab",
+        "label": "Flujo 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "773b90ec8d9f4f94",
+        "type": "inject",
+        "z": "1561679d6f0e7efe",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "5",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 260,
+        "y": 140,
+        "wires": [
+            [
+                "275e763813031c95"
+            ]
+        ]
+    },
+    {
+        "id": "275e763813031c95",
+        "type": "function",
+        "z": "1561679d6f0e7efe",
+        "name": "sensorPresion",
+        "func": "let timestamp = msg.payload;\nlet presionBase = 4.5;\nlet variacion = (Math.random() - 0.5) * 0.3;\nlet presionFinal = presionBase + variacion;\n\n// Convertimos a entero para Modbus\nlet valorModbus = Math.round(presionFinal * 100);\n\n// Configuramos el mensaje para el nodo Modbus\nmsg.payload = {\n    value: valorModbus, \n    fc: 6,              // FC 6 (Write Single Register) es perfecto para %MW\n    unitid: 1,\n    address: 100,       // Cambiado a 100 para apuntar a %MW100\n    quantity: 1\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 140,
+        "wires": [
+            [
+                "67be5e4151312b1f"
+            ]
+        ]
+    },
+    {
+        "id": "3c51e549c05fcf17",
+        "type": "debug",
+        "z": "1561679d6f0e7efe",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "67be5e4151312b1f",
+        "type": "modbus-flex-write",
+        "z": "1561679d6f0e7efe",
+        "name": "toPLC",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "server": "b61406ddacefabb7",
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": true,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 810,
+        "y": 140,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "d2c3360d94883c7c",
+        "type": "inject",
+        "z": "1561679d6f0e7efe",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "5",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 260,
+        "y": 420,
+        "wires": [
+            [
+                "f40ad38cbf3374a8"
+            ]
+        ]
+    },
+    {
+        "id": "f40ad38cbf3374a8",
+        "type": "function",
+        "z": "1561679d6f0e7efe",
+        "name": "sensorCaudal",
+        "func": "let timestamp = msg.payload;\n\nlet presionBase = 4.5; // Bar\nlet variacion = (Math.random() - 0.5) * 0.3; // Variación de +/- 0.15 bar\n\nlet presionFinal = presionBase + variacion;\n\nmsg.payload = {\n    sensor: \"sensor_presion_bomba\",\n    valor: parseFloat(presionFinal.toFixed(2)),\n    unidad: \"bar\",\n    timestamp: timestamp\n};\n\nmsg.payload = msg.payload.valor;\nreturn msg;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 420,
+        "wires": [
+            [
+                "690b81b474ce3309"
+            ]
+        ]
+    },
+    {
+        "id": "15461339b6f21c90",
+        "type": "debug",
+        "z": "1561679d6f0e7efe",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1180,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "f7675c81f8d45219",
+        "type": "modbus-read",
+        "z": "1561679d6f0e7efe",
+        "name": "readPresion",
+        "topic": "a",
+        "showStatusActivities": true,
+        "logIOActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "unitid": "1",
+        "dataType": "HoldingRegister",
+        "adr": "100",
+        "quantity": "1",
+        "rate": "2",
+        "rateUnit": "s",
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "server": "b61406ddacefabb7",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 1050,
+        "y": 140,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "690b81b474ce3309",
+        "type": "modbus-write",
+        "z": "1561679d6f0e7efe",
+        "name": "toPLC",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "unitid": "0",
+        "dataType": "Coil",
+        "adr": "0",
+        "quantity": "1",
+        "server": "5257d28f7e183b63",
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": true,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 710,
+        "y": 440,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "555802770adce069",
+        "type": "modbus-read",
+        "z": "1561679d6f0e7efe",
+        "name": "readCaudal",
+        "topic": "a",
+        "showStatusActivities": true,
+        "logIOActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "unitid": "0",
+        "dataType": "HoldingRegister",
+        "adr": "0",
+        "quantity": "1",
+        "rate": "2",
+        "rateUnit": "s",
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "server": "5257d28f7e183b63",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 970,
+        "y": 440,
+        "wires": [
+            [],
+            [
+                "15461339b6f21c90"
+            ]
+        ]
+    },
+    {
+        "id": "b61406ddacefabb7",
+        "type": "modbus-client",
+        "name": "plc-bombeo-entrada",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": true,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "172.17.0.1",
+        "tcpPort": "5020",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": 9600,
+        "serialDatabits": 8,
+        "serialStopbits": 1,
+        "serialParity": "none",
+        "serialConnectionDelay": 100,
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": 1,
+        "commandDelay": 1,
+        "clientTimeout": 1000,
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": 2000,
+        "parallelUnitIdsAllowed": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "5257d28f7e183b63",
+        "type": "modbus-client",
+        "name": "plc-entrada-deposito",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "192.168.1.40",
+        "tcpPort": "5021",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": 9600,
+        "serialDatabits": 8,
+        "serialStopbits": 1,
+        "serialParity": "none",
+        "serialConnectionDelay": 100,
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": 1,
+        "commandDelay": 1,
+        "clientTimeout": 1000,
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": 2000,
+        "parallelUnitIdsAllowed": true,
+        "showErrors": false,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "a03a122640b135cc",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-modbus": "5.45.2"
+        }
+    }
+]
