@@ -5,7 +5,6 @@
     mode: '0755'
     owner: debian-dev
     group: debian-dev
-  become: yes
 
 # - name: 1 - Comprobar si la imagen de Node-RED ya existe
 #   ansible.builtin.shell: "podman images -q localhost/nodered-local:latest"
