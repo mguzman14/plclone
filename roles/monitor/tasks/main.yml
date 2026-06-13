@@ -1,3 +1,4 @@
+---
 - name: 1. Asegurar que el socket de Podman del usuario está activo y habilitado
   ansible.builtin.systemd:
     name: podman.socket
@@ -7,22 +8,41 @@
   become: yes
   become_user: debian-dev
 
-- name: 2. Desplegar el contenedor de Weave Scope mediante Podman
-  containers.podman.podman_container:
-    name: weavescope
-    image: "weaveworks/scope:latest"
-    state: started
-    restart_policy: always
-    # Eliminamos network_mode: host y pid: host para evitar bloqueos de privilegios
-    privileged: yes
-    # MAPEO EXPLÍCITO: Vinculamos el puerto 8081 de tu PC al 4040 interno de Scope
-    ports:
-      - "8081:4040"
-    volumes:
-      - "/run/user/1000/podman/podman.sock:/var/run/docker.sock:Z"
-    command:
-      - "--probe.docker=true"
-      - "--probe.kubernetes=false"
-      - "--weave=false"
+- name: "1.5. Corregir y asegurar propiedad de la carpeta base de servicios"
+  ansible.builtin.file:
+    path: "/home/debian-dev/services"
+    state: directory
+    owner: debian-dev
+    group: debian-dev
+    mode: '0755'
+  become: yes  # Ejecuta como root para poder cambiar el dueño si estuviera bloqueado
+
+- name: "2. Asegurar directorio de destino para los servicios (portainer / weavescope)"
+  ansible.builtin.file:
+    path: "/home/debian-dev/services/{{ (item | ansible.builtin.basename | ansible.builtin.splitext | first | ansible.builtin.regex_replace('\\.yml$', '')) | ansible.builtin.regex_replace('^p-?compose[-.]', '') }}"
+    state: directory
+    mode: '0755'
+    owner: debian-dev
+    group: debian-dev
+  loop: "{{ query('ansible.builtin.fileglob', role_path ~ '/templates/p*compose*.yml.j2') }}"
+  become: yes
+  become_user: debian-dev
+
+- name: "3. Procesar plantilla Jinja2 y generar el docker-compose.yml"
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/home/debian-dev/services/{{ (item | ansible.builtin.basename | ansible.builtin.splitext | first | ansible.builtin.regex_replace('\\.yml$', '')) | ansible.builtin.regex_replace('^p-?compose[-.]', '') }}/docker-compose.yml"
+    mode: '0644'
+  loop: "{{ query('ansible.builtin.fileglob', role_path ~ '/templates/p*compose*.yml.j2') }}"
+  become: yes
+  become_user: debian-dev
+
+- name: "4. Levantar servicios con podman-compose"
+  ansible.builtin.command:
+    cmd: "podman-compose up -d"
+    chdir: "/home/debian-dev/services/{{ (item | ansible.builtin.basename | ansible.builtin.splitext | first | ansible.builtin.regex_replace('\\.yml$', '')) | ansible.builtin.regex_replace('^p-?compose[-.]', '') }}"
+  register: compose_output
+  changed_when: "'Creating' in compose_output.stdout or 'Starting' in compose_output.stdout"
+  loop: "{{ query('ansible.builtin.fileglob', role_path ~ '/templates/p*compose*.yml.j2') }}"
   become: yes
   become_user: debian-dev
