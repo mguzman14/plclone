@@ -37,3 +37,12 @@
       # Mapeamos los datos para no perder tus flujos si se reinicia el contenedor
       - /home/debian-dev/services/nodered/data:/data:Z
   become_user: debian-dev
+
+- name: Corregir permisos y propietario de la carpeta de Node-RED
+  ansible.builtin.file:
+    path: "/home/debian-dev/services/nodered"  # Tu variable con la ruta del host
+    state: directory
+    owner: "1000"                 # UID de Node-RED dentro del contenedor
+    group: "1000"                 # GID de Node-RED dentro del contenedor
+    mode: '0777'                  # Permisos de lectura/escritura/ejecución
+    recurse: yes                  # Aplica a todos los archivos internos (.json, backups, etc.)
