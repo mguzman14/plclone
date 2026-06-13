@@ -28,10 +28,10 @@
   become: yes
   become_user: debian-dev
 
-- name: "3. Procesar plantilla Jinja2 y generar el docker-compose.yml"
+- name: "3. Procesar plantilla Jinja2 y generar el podman-compose.yml"
   ansible.builtin.template:
     src: "{{ item }}"
-    dest: "/home/debian-dev/services/{{ (item | ansible.builtin.basename | ansible.builtin.splitext | first | ansible.builtin.regex_replace('\\.yml$', '')) | ansible.builtin.regex_replace('^p-?compose[-.]', '') }}/docker-compose.yml"
+    dest: "/home/debian-dev/services/{{ (item | ansible.builtin.basename | ansible.builtin.splitext | first | ansible.builtin.regex_replace('\\.yml$', '')) | ansible.builtin.regex_replace('^p-?compose[-.]', '') }}/podman-compose.yml"
     mode: '0644'
   loop: "{{ query('ansible.builtin.fileglob', role_path ~ '/templates/p*compose*.yml.j2') }}"
   become: yes
