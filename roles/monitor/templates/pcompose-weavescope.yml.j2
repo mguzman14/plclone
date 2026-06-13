@@ -10,12 +10,7 @@ services:
     restart: always
     volumes:
       - "/run/user/1000/podman/podman.sock:/var/run/docker.sock:Z"
-    command: 
-      - "--probe.docker=true"
-      - "--probe.kubernetes=false"
-      - "--weave=false"
-      - "--app.bind=:8081"
-
-networks:
-  network_all:
-    external: true
+    #------------------------------------------------------------------------
+    # "app" activa el entrypoint, "-app-listen" configura el puerto en Go
+    #------------------------------------------------------------------------
+    command: --probe.docker=true --probe.docker.bridge=none unix:///var/run/docker.sock

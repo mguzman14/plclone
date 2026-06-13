@@ -24,7 +24,7 @@
     mode: '0755'
     owner: debian-dev
     group: debian-dev
-  loop: "{{ query('ansible.builtin.fileglob', role_path ~ '/templates/p*compose*.yml.j2') }}"
+  loop: "{{ query('ansible.builtin.fileglob', role_path ~ '/templates/pcompose*.yml.j2') }}"
   become: yes
   become_user: debian-dev
 
@@ -33,7 +33,7 @@
     src: "{{ item }}"
     dest: "/home/debian-dev/services/{{ (item | ansible.builtin.basename | ansible.builtin.splitext | first | ansible.builtin.regex_replace('\\.yml$', '')) | ansible.builtin.regex_replace('^p-?compose[-.]', '') }}/podman-compose.yml"
     mode: '0644'
-  loop: "{{ query('ansible.builtin.fileglob', role_path ~ '/templates/p*compose*.yml.j2') }}"
+  loop: "{{ query('ansible.builtin.fileglob', role_path ~ '/templates/pcompose*.yml.j2') }}"
   become: yes
   become_user: debian-dev
 
@@ -43,6 +43,6 @@
     chdir: "/home/debian-dev/services/{{ (item | ansible.builtin.basename | ansible.builtin.splitext | first | ansible.builtin.regex_replace('\\.yml$', '')) | ansible.builtin.regex_replace('^p-?compose[-.]', '') }}"
   register: compose_output
   changed_when: "'Creating' in compose_output.stdout or 'Starting' in compose_output.stdout"
-  loop: "{{ query('ansible.builtin.fileglob', role_path ~ '/templates/p*compose*.yml.j2') }}"
+  loop: "{{ query('ansible.builtin.fileglob', role_path ~ '/templates/pcompose*.yml.j2') }}"
   become: yes
   become_user: debian-dev
