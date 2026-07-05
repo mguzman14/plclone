@@ -1,43 +1,39 @@
-# - name: Comprobar si la imagen de OpenPLC ya existe localmente en Podman
-#   ansible.builtin.shell: podman images | grep "localhost/openplc-local"
-#   register: podman_image_check
-#   failed_when: false
-#   changed_when: false
-
-# - name: Asegurar que la imagen de OpenPLC está presente (Solo compila si NO existe)
-#   containers.podman.podman_image:
-#     name: openplc-local
-#     tag: latest
-#     path: "{{ role_path }}/files"
-#     state: present
-#     force: false
-#   # AHORA SÍ: Como la tarea de arriba está activa, registrará el éxito (rc == 0) y esta tarea se marcará como SKIPPING
-#   when: podman_image_check.rc != 0
-
-# - name: Asegurar que la imagen existe localmente en Podman
-#   ansible.builtin.shell: podman pull localhost/openplc-local:latest
-#   become: yes
-#   become_user: debian-dev
-#   ignore_errors: yes
-
-
-# - name: Comprobar si los contenedores ya existen
-#   ansible.builtin.shell: "podman ps -a --format '{{ '{{' }}.Names{{ '}}' }}'"
-#   become: yes
-#   become_user: debian-dev
-#   register: contenedores_existentes
-#   changed_when: false
-
-- name: Desplegar la flota de PLCs
-  ansible.builtin.shell: >
-    podman run -d --name "{{ item.nombre }}" --restart always 
-    -p "{{ 9001 + ansible_loop.index0 }}:8080" 
-    -p "{{ 5020 + ansible_loop.index0 }}:502" 
-    localhost/openplc-local:latest
+---
+# ==========================================================
+# TAREA 1: CREACIÓN DINÁMICA DE REDES (SWITCHES)
+# ==========================================================
+- name: "1. Crear las redes dinámicamente según tu diccionario flota_plc"
+  containers.podman.podman_network:
+    name: "{{ item.key }}"
+    driver: bridge
+    internal: true # Mantenemos el aislamiento OT estricto (IEC 62443)
   become: yes
   become_user: debian-dev
-  loop: "{{ flota_plc }}"
-  loop_control:
-    extended: true
-  # ESTA ES LA CLAVE: Solo se ejecuta si el nombre NO está en la lista de contenedores existentes
-  # when: item.nombre not in contenedores_existentes.stdout_lines
+  loop: "{{ flota_plc | dict2items }}"
+
+# ==========================================================
+# TAREA 2: DESPLIEGUE ANIDADO DE PLCS CON IP FIJA
+# ==========================================================
+- name: "2. Bucle Anidado: Por cada red, levantar sus activos con IP estática"
+  containers.podman.podman_container:
+    name: "{{ item.1.nombre }}"                     # Accede al campo 'nombre' del objeto
+    image: "localhost/openplc-local:latest"
+    state: started
+    restart_policy: always
+    network: "{{ item.0.key }}"                     # Nombre de la red (red_industrial_1, etc.)
+    ip: "{{ item.1.ip_fija }}"                      # INYECCIÓN DE LA IP FIJA INDUSTRIAL
+    
+    # Mapeo dinámico de puertos adaptado a la nueva estructura de objetos
+    expose:
+      - "8080"
+      - "502"
+    ports:
+      - "{{ 9001 + lista_plcs_plana.index(item.1.nombre) }}:8080"
+      - "{{ 5020 + lista_plcs_plana.index(item.1.nombre) }}:502"
+  become: yes
+  become_user: debian-dev
+  # Subelements ahora itera sobre la lista 'value.dispositivos' de cada red
+  loop: "{{ q('ansible.builtin.subelements', flota_plc | dict2items, 'value.dispositivos') }}"
+  vars:
+    # Generamos la lista plana de nombres extrayendo solo el campo 'nombre' para mantener tu cálculo de puertos
+    lista_plcs_plana: "{{ flota_plc.values() | map(attribute='dispositivos') | flatten | map(attribute='nombre') | list }}"

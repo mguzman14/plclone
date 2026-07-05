@@ -2,6 +2,19 @@ all:
   vars:
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     tailscale_key: "{{ lookup('env', 'TS_KEY') }}"
+
+    flota_plc:
+      red_industrial_1:
+        dispositivos:
+          - nombre: "plc-bombeo-entrada"
+            ip_fija: "192.168.2.10"
+          - nombre: "hmi-filtracion"
+            ip_fija: "192.168.2.20"
+
+      red_industrial_2:
+        dispositivos:
+          - nombre: "plc-deposito"
+            ip_fija: "192.168.3.10"
   
   hosts:
     etap:
@@ -11,11 +24,7 @@ all:
       ansible_connection: local
 
 
-      flota_plc:
-      - nombre: "plc-bombeo-entrada"
-      - nombre: "plc-dosificacion-cloro"
-      - nombre: "plc-filtracion"
-      - nombre: "plc-bombeo-salida"
+   
 
   children:
     prod:
