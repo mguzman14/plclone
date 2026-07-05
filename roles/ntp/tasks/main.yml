@@ -1,0 +1,11 @@
+
+
+- name: Levantar el Servidor NTP Maestro de la Planta
+  containers.podman.podman_container:
+    name: servidor-ntp
+    image: alpine
+    state: started
+    restart_policy: always
+    network: red_dmz
+    # Arranca solo el demonio NTP, escucha en red (-l) y se sincroniza con internet (-p)
+    command: ntpd -n -l -I red_dmz -p pool.ntp.org

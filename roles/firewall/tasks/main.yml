@@ -1,0 +1,27 @@
+
+- name: "Asegurar que el directorio del firewall existe en el host"
+  ansible.builtin.file:
+    path: /home/debian-dev/etap/firewall
+    state: directory
+    mode: '0755'
+    owner: debian-dev  # Forzamos que el dueño sea tu usuario dev
+    group: debian-dev
+
+- name: Levantar el contenedor Firewall de Zona
+  containers.podman.podman_container:
+    name: firewall-zona1
+    image: alpine
+    state: started
+    restart_policy: always
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_TIME # Necesario para dejarle sincronizar la hora
+    network:
+      - red_dmz
+      - red_industrial_1
+    volume:
+      - "/home/debian-dev/etap/firewall:/opt/firewall:Z"
+    # Ahora le pide la hora específicamente a 'servidor-ntp'
+    command: >
+      sh -c "ntpd -q -p servidor-ntp && /opt/firewall/rules.sh && tail -f /dev/null"

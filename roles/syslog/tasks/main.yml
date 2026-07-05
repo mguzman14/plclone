@@ -1,0 +1,18 @@
+
+- name: "Asegurar el directorio de logs en el host (Idempotente)"
+  ansible.builtin.file:
+    path: /home/debian-dev/etap/logs
+    state: directory
+    mode: '0755'
+
+- name: Levantar el Servidor Syslog (Track & Trace)
+  containers.podman.podman_container:
+    name: servidor-syslog
+    image: alpine
+    state: started
+    restart_policy: always
+    network: red_dmz
+    volume:
+      - "/home/debian-dev/etap/logs:/var/log/etap:Z"
+    # Arranca solo el demonio de syslog en primer plano (-n)
+    command: syslogd -n -O /var/log/etap/planta_agua.log -b 0
