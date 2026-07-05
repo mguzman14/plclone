@@ -1,39 +1,37 @@
 ---
-# ==========================================================
-# TAREA 1: CREACIÓN DINÁMICA DE REDES (SWITCHES)
-# ==========================================================
-- name: "1. Crear las redes dinámicamente según tu diccionario flota_plc"
-  containers.podman.podman_network:
-    name: "{{ item.key }}"
-    driver: bridge
-    internal: true # Mantenemos el aislamiento OT estricto (IEC 62443)
-  become: yes
-  become_user: debian-dev
+# TAREA 1A: Preguntar a Podman de forma nativa si las redes ya están creadas
+- name: "1a. Comprobar si las redes ya existen en Podman"
+  ansible.builtin.command: "podman network exists {{ item.key }}"
   loop: "{{ flota_plc | dict2items }}"
+  register: redes_existentes
+  failed_when: false
+  changed_when: false
+  become: false
 
-# ==========================================================
-# TAREA 2: DESPLIEGUE ANIDADO DE PLCS CON IP FIJA
-# ==========================================================
+# TAREA 1B: Crear la red ÚNICAMENTE si no se encuentra en el sistema (rc != 0)
+- name: "1b. Crear las redes industriales si no existen"
+  containers.podman.podman_network:
+    name: "{{ item.item.key }}"
+    subnet: "{{ item.item.value.subred }}"
+  loop: "{{ redes_existentes.results }}"
+  when: item.rc != 0 # Si devuelve algo distinto de 0 significa que NO existía
+  become: false
+
+# TAREA 2: Mapeo de paneles web usando el puerto interno HTTPS correcto (8443)
+# TAREA 2: Mapeo limpio y diferenciado del puerto HTTPS 8443 hacia el Host
 - name: "2. Bucle Anidado: Por cada red, levantar sus activos con IP estática"
   containers.podman.podman_container:
-    name: "{{ item.1.nombre }}"                     # Accede al campo 'nombre' del objeto
-    image: "localhost/openplc-local:latest"
+    name: "{{ item.1.nombre }}"
+    image: ghcr.io/autonomy-logic/openplc-runtime:latest
     state: started
     restart_policy: always
-    network: "{{ item.0.key }}"                     # Nombre de la red (red_industrial_1, etc.)
-    ip: "{{ item.1.ip_fija }}"                      # INYECCIÓN DE LA IP FIJA INDUSTRIAL
-    
-    # Mapeo dinámico de puertos adaptado a la nueva estructura de objetos
-    expose:
-      - "8080"
-      - "502"
+    network: "{{ item.0.key }}"
+    ip: "{{ item.1.ip_fija }}"
+    # 👇 MAPEAMOS EL PUERTO DEL HOST (5020, 5021, 5022) AL PUERTO INTERNO HTTPS (8443)
     ports:
-      - "{{ 9001 + lista_plcs_plana.index(item.1.nombre) }}:8080"
-      - "{{ 5020 + lista_plcs_plana.index(item.1.nombre) }}:502"
-  become: yes
-  become_user: debian-dev
-  # Subelements ahora itera sobre la lista 'value.dispositivos' de cada red
-  loop: "{{ q('ansible.builtin.subelements', flota_plc | dict2items, 'value.dispositivos') }}"
-  vars:
-    # Generamos la lista plana de nombres extrayendo solo el campo 'nombre' para mantener tu cálculo de puertos
-    lista_plcs_plana: "{{ flota_plc.values() | map(attribute='dispositivos') | flatten | map(attribute='nombre') | list }}"
+      - "{{ (5020 + my_idx | int) }}:8443"
+    recreate: true
+  loop: "{{ flota_plc | dict2items | subelements('value.dispositivos') }}"
+  loop_control:
+    index_var: my_idx
+  become: false
