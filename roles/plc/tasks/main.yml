@@ -17,20 +17,18 @@
   when: item.rc != 0 # Si devuelve algo distinto de 0 significa que NO existía
   become: false
 
-# TAREA 2: Mapeo de paneles web usando el puerto interno HTTPS correcto (8443)
-# TAREA 2: Mapeo limpio y diferenciado del puerto HTTPS 8443 hacia el Host
+# TAREA 2: Mapear los puertos del host al puerto web interno tradicional (8080)
 - name: "2. Bucle Anidado: Por cada red, levantar sus activos con IP estática"
   containers.podman.podman_container:
     name: "{{ item.1.nombre }}"
-    image: ghcr.io/autonomy-logic/openplc-runtime:latest
+    image: localhost/openplc-local:latest
     state: started
     restart_policy: always
     network: "{{ item.0.key }}"
     ip: "{{ item.1.ip_fija }}"
-    # 👇 MAPEAMOS EL PUERTO DEL HOST (5020, 5021, 5022) AL PUERTO INTERNO HTTPS (8443)
     ports:
-      - "{{ (5020 + my_idx | int) }}:8443"
-    recreate: true
+      - "{{ (5020 + my_idx | int) }}:8080"
+    recreate: true #
   loop: "{{ flota_plc | dict2items | subelements('value.dispositivos') }}"
   loop_control:
     index_var: my_idx
