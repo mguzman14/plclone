@@ -1,21 +1,23 @@
 ---
 # TAREA 1A: Preguntar a Podman de forma nativa si las redes ya están creadas
-- name: "1a. Comprobar si las redes ya existen en Podman"
-  ansible.builtin.command: "podman network exists {{ item.key }}"
+# Reemplaza tus tareas 1A y 1B por esta única tarea limpia:
+- name: "Asegurar que las redes industriales existen"
+  containers.podman.podman_network:
+    name: "{{ item.key }}"
+    subnet: "{{ item.value.subred }}"
+    state: present
   loop: "{{ flota_plc | dict2items }}"
-  register: redes_existentes
-  failed_when: false
-  changed_when: false
   become: false
+  ignore_errors: true
 
 # TAREA 1B: Crear la red ÚNICAMENTE si no se encuentra en el sistema (rc != 0)
-- name: "1b. Crear las redes industriales si no existen"
-  containers.podman.podman_network:
-    name: "{{ item.item.key }}"
-    subnet: "{{ item.item.value.subred }}"
-  loop: "{{ redes_existentes.results }}"
-  when: item.rc != 0 # Si devuelve algo distinto de 0 significa que NO existía
-  become: false
+# - name: "1b. Crear las redes industriales si no existen"
+#   containers.podman.podman_network:
+#     name: "{{ item.item.key }}"
+#     subnet: "{{ item.item.value.subred }}"
+#   loop: "{{ redes_existentes.results }}"
+#   when: item.rc != 0 # Si devuelve algo distinto de 0 significa que NO existía
+#   become: false
 
 # TAREA 2: Mapear los puertos del host al puerto web interno tradicional (8080)
 - name: "2. Bucle Anidado: Por cada red, levantar sus activos con IP estática"

@@ -9,19 +9,34 @@
 
 - name: Levantar el contenedor Firewall de Zona
   containers.podman.podman_container:
-    name: firewall-zona1
+    name: "{{ item.name }}"
     image: alpine
     state: started
     restart_policy: always
     cap_add:
       - NET_ADMIN
       - NET_RAW
-      - SYS_TIME # Necesario para dejarle sincronizar la hora
+      - SYS_TIME
     network:
-      - red_dmz
-      - red_industrial_1
+      - red-dmz
+      - "{{ item.networks }}"
     volume:
       - "/home/debian-dev/etap/firewall:/opt/firewall:Z"
-    # Ahora le pide la hora específicamente a 'servidor-ntp'
-    command: >
-      sh -c "ntpd -q -p servidor-ntp && /opt/firewall/rules.sh && tail -f /dev/null"
+    command:
+      - sh
+      - -c
+      - ntpd -q -p servidor-ntp && /opt/firewall/rules.sh && tail -f /dev/null
+  become: false
+  loop:
+    - name: fw-entrada
+      networks: [red-entrada]
+    - name: fw-pretratamiento
+      networks: [red-pretratamiento]
+    - name: fw-tanque-mezcla
+      networks: [red-tanque-mezcla]
+    - name: fw-decantador
+      networks: [red-decantador]
+    - name: fw-desinfeccion
+      networks: [red-desinfeccion]
+    - name: fw-dmz
+      networks: [red-dmz]

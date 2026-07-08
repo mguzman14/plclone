@@ -1,26 +1,21 @@
 ---
-- name: "Garantizar Infraestructura"
-  hosts: all
-  gather_facts: no
-  become: true
+# - name: "Garantizar Infraestructura"
+#   hosts: all
+#   gather_facts: no
+#   become: true
 
-  pre_tasks:
-    - name: "Asegurar la existencia de la red red_dmz de forma pasiva"
-      containers.podman.podman_network:
-        name: red_dmz
-        state: present     # <--- Si existe, no hace nada (evita el error). Si no existe, la crea.
-        driver: bridge
-        internal: true     # <--- Mantenemos la directiva que tenías en Portainer
-        # Quitamos 'recreate: true' para que no intente destruirla si está en uso.
+  # pre_tasks:
+  #   - name: "Asegurar la existencia de la red red_dmz de forma pasiva"
+  #     containers.podman.podman_network:
+  #       name: red_dmz
+  #       state: present     # <--- Si existe, no hace nada (evita el error). Si no existe, la crea.
+  #       driver: bridge
+  #       internal: true     # <--- Mantenemos la directiva que tenías en Portainer
+  #       # Quitamos 'recreate: true' para que no intente destruirla si está en uso.
 
-  roles:
-    - { role: ntp, tags: ['ntp'] }
-- name: "Servidor NTP (Network Time Protocol)"
-  hosts: all
-  become: true
-  gather_facts: no
-  roles: 
-  - { role: ntp, tags: ['ntp'] }
+  # roles:
+  #   - { role: ntp, tags: ['ntp'] }
+
 
 - name: "PLC | Init"
   hosts: all
@@ -29,16 +24,23 @@
   roles:
   - { role: plc, tags: ['plc'] }
 
+- name: "Servidor NTP (Network Time Protocol)"
+  hosts: all
+  become: false
+  gather_facts: no
+  roles: 
+  - { role: ntp, tags: ['ntp'] }
+
 - name: "Syslog"
   hosts: all
-  become: true
+  become: false
   gather_facts: no
   roles: 
   - { role: syslog, tags: ['syslog'] }
 
 - name: "Firewall"
   hosts: all
-  become: true
+  become: false
   gather_facts: no
   roles: 
   - { role: firewall, tags: ['firewall'] }

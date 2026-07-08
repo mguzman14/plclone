@@ -4,19 +4,48 @@ all:
     tailscale_key: "{{ lookup('env', 'TS_KEY') }}"
 
     flota_plc:
-      red_industrial_1:
-        subred: "192.168.2.0/24" # 👈 AÑADE ESTO
+      red-entrada:
+        subred: "192.168.2.0/24" # 
         dispositivos:
-          - nombre: "plc-bombeo-entrada"
+          - nombre: "plc-bombeo-entrada-1"
             ip_fija: "192.168.2.10"
-          - nombre: "plc-filtracion"
+          - nombre: "plc-bombeo-entrada-2"
             ip_fija: "192.168.2.20"
-
-      red_industrial_2:
-        subred: "192.168.3.0/24" # 👈 AÑADE ESTO
+      red-pretratamiento:
+        subred: "192.168.3.0/24" # 
         dispositivos:
-          - nombre: "plc-deposito"
+          - nombre: "plc-reja-desb-1"
             ip_fija: "192.168.3.10"
+          - nombre: "plc-reja-desb-2"
+            ip_fija: "192.168.3.20"
+
+      red-tanque-mezcla:
+        subred: "192.168.4.0/24" # 
+        dispositivos:
+          - nombre: "plc-tanque-mezcla-1"
+            ip_fija: "192.168.4.10"
+          - nombre: "plc-tanque-mezcla-2"
+            ip_fija: "192.168.4.20"
+  
+      red-decantador:
+        subred: "192.168.5.0/24" # 
+        dispositivos:
+          - nombre: "plc-tanque-mezcla-1"
+            ip_fija: "192.168.5.10"
+          - nombre: "plc-tanque-mezcla-2"
+            ip_fija: "192.168.5.20"
+
+      red-desinfeccion:
+        subred: "192.168.6.0/24" # 
+        dispositivos:
+          - nombre: "plc-tanque-mezcla-1"
+            ip_fija: "192.168.6.10"
+          - nombre: "plc-tanque-mezcla-2"
+            ip_fija: "192.168.6.20"
+
+      red-dmz:
+        subred: "192.168.7.0/24" # Subred que le corresponde
+        dispositivos: []
   
   hosts:
     etap:

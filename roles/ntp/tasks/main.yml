@@ -6,6 +6,6 @@
     image: alpine
     state: started
     restart_policy: always
-    network: red_dmz
+    network: red-dmz
     # Arranca solo el demonio NTP, escucha en red (-l) y se sincroniza con internet (-p)
-    command: ntpd -n -l -I red_dmz -p pool.ntp.org
+    command: ntpd -n -l -I red-dmz -p pool.ntp.org

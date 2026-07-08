@@ -11,7 +11,7 @@
     image: alpine
     state: started
     restart_policy: always
-    network: red_dmz
+    network: red-dmz
     volume:
       - "/home/debian-dev/etap/logs:/var/log/etap:Z"
     # Arranca solo el demonio de syslog en primer plano (-n)
