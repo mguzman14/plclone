@@ -30,17 +30,17 @@ all:
       red-decantador:
         subred: "192.168.5.0/24" # 
         dispositivos:
-          - nombre: "plc-tanque-mezcla-1"
+          - nombre: "plc-decant-1"
             ip_fija: "192.168.5.10"
-          - nombre: "plc-tanque-mezcla-2"
+          - nombre: "plc-decant-2"
             ip_fija: "192.168.5.20"
 
       red-desinfeccion:
         subred: "192.168.6.0/24" # 
         dispositivos:
-          - nombre: "plc-tanque-mezcla-1"
+          - nombre: "plc-desinf-1"
             ip_fija: "192.168.6.10"
-          - nombre: "plc-tanque-mezcla-2"
+          - nombre: "plc-desinf-2"
             ip_fija: "192.168.6.20"
 
       red-dmz:

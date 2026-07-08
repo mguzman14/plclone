@@ -17,9 +17,7 @@
       - NET_ADMIN
       - NET_RAW
       - SYS_TIME
-    network:
-      - red-dmz
-      - "{{ item.networks }}"
+    network: "{{ ['red-dmz'] + item.networks }}"
     volume:
       - "/home/debian-dev/etap/firewall:/opt/firewall:Z"
     command:
